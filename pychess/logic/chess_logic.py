@@ -15,54 +15,70 @@ class ChessLogic:
         self.current_turn = "w"
 
     def parse_move(self, move: str):
-        start, end = move[:2], move[2:]
-        return self.to_index(start), self.to_index(end)
+        try:
+            start, end = move[:2], move[2:]
+            return self.to_index(start), self.to_index(end)
+        except Exception as e:
+            print(f"Error parsing move {move}: {e}")
+            return None, None
     
     def to_index(self, pos: str):
-        col = ord(pos[0]) - ord('a')
-        row = 8 - int(pos[1])
-        return row, col
+        try:
+            col = ord(pos[0]) - ord('a')
+            row = 8 - int(pos[1])
+            return row, col
+        except Exception as e:
+            print(f"Invalid position {pos}: {e}")
+            return -1, -1
 
     def play_move(self, move: str) -> str:
-        (start_row, start_col), (end_row, end_col) = self.parse_move(move)
-        piece = self.board[start_row][start_col]
-        target = self.board[end_row][end_col]
+        try:
+            (start_row, start_col), (end_row, end_col) = self.parse_move(move)
+            if start_row == -1 or end_row == -1:
+                return "Invalid move"
 
-        if not piece or (piece.isupper() and target.isupper()) or (piece.islower() and target.islower()):
-            return ""
+            piece = self.board[start_row][start_col]
+            target = self.board[end_row][end_col]
 
-        if (self.current_turn == "w" and not piece.isupper()) or (self.current_turn == "b" and not piece.islower()):
-            return ""
+            if not piece or (piece.isupper() and target.isupper()) or (piece.islower() and target.islower()):
+                return "Invalid move"
 
-        if not self.is_valid_move(piece, start_row, start_col, end_row, end_col):
-            return ""
+            if (self.current_turn == "w" and not piece.isupper()) or (self.current_turn == "b" and not piece.islower()):
+                return "Not your turn"
 
-        # Handle en passant
-        if piece.lower() == 'p' and end_col != start_col and target == "" and self.en_passant_target == (end_row, end_col):
-            self.board[start_row][end_col] = ""
+            if not self.is_valid_move(piece, start_row, start_col, end_row, end_col):
+                return "Illegal move"
 
-        # Perform move
-        self.board[end_row][end_col] = piece
-        self.board[start_row][start_col] = ""
+            # Handle en passant
+            if piece.lower() == 'p' and end_col != start_col and target == "" and self.en_passant_target == (end_row, end_col):
+                self.board[start_row][end_col] = ""
 
-        # Handle pawn promotion
-        if piece.lower() == 'p' and (end_row == 0 or end_row == 7):
-            self.board[end_row][end_col] = 'Q' if piece.isupper() else 'q'
+            # Perform move
+            self.board[end_row][end_col] = piece
+            self.board[start_row][start_col] = ""
 
-        # Update en passant target
-        self.en_passant_target = None
-        if piece.lower() == 'p' and abs(start_row - end_row) == 2:
-            self.en_passant_target = ((start_row + end_row) // 2, start_col)
+            # Handle pawn promotion
+            if piece.lower() == 'p' and (end_row == 0 or end_row == 7):
+                self.board[end_row][end_col] = 'Q' if piece.isupper() else 'q'
 
-        # Update turns
-        self.current_turn = "b" if self.current_turn == "w" else "w"
+            # Update en passant target
+            self.en_passant_target = None
+            if piece.lower() == 'p' and abs(start_row - end_row) == 2:
+                self.en_passant_target = ((start_row + end_row) // 2, start_col)
 
-        # Check for checkmate
-        opponent = "b" if piece.isupper() else "w"
-        if self.is_checkmate(opponent):
-            self.result = opponent
+            # Update turns
+            self.current_turn = "b" if self.current_turn == "w" else "w"
 
-        return f"{chr(start_col + 97)}{8 - start_row}{chr(end_col + 97)}{8 - end_row}"
+            # Check for checkmate
+            opponent = "b" if piece.isupper() else "w"
+            if self.is_checkmate(opponent):
+                self.result = opponent
+
+            return f"{chr(start_col + 97)}{8 - start_row}{chr(end_col + 97)}{8 - end_row}"
+        
+        except Exception as e:
+            print(f"Error during move {move}: {e}")
+            return "Error encountered"
 
     def is_valid_move(self, piece, start_row, start_col, end_row, end_col):
         if piece.lower() == "p":
@@ -86,5 +102,3 @@ class ChessLogic:
         elif piece.lower() == "k":
             return self.is_valid_king_move(start_row, start_col, end_row, end_col)
         return False
-
-    # The rest of the functions (e.g., rook, bishop, queen, knight, king, check/checkmate) remain unchanged.
