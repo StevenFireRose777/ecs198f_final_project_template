@@ -1,5 +1,7 @@
 
 from chess_logic import ChessLogic
+from .utils import array2grid, grid2array
+from .pieces import *
 
 def main():
     chess_game = ChessLogic()

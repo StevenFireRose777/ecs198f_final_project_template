@@ -1,5 +1,7 @@
-from utils import array2grid, grid2array
-from pieces import *
+
+from .utils import array2grid, grid2array
+from .pieces import *
+
 
 from typing import List
 from typing import Tuple  
