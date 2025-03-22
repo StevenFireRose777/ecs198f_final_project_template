@@ -2,9 +2,9 @@
 from chess_logic import ChessLogic
 
 def main():
-    game = ChessLogic()
+    chess_game = ChessLogic()
     print("Initial Board:")
-    for row in game.board:
+    for row in chess_game.chess_board:
         print(' '.join(row))
 
 if __name__ == "__main__":

@@ -1,23 +1,23 @@
 
 from utils import array2grid, grid2array
 
-def get_white_pawn_valid_moves(pos: str, piece: str, board):
-    row_index, col_index = grid2array(pos)
-    valid_moves = []
+def get_white_pawn_valid_moves(position: str, chess_piece: str, chess_board):
+    row, column = grid2array(position)
+    valid_move_list = []
     
-    pos_at_front = array2grid(row_index-1, col_index)
-    if pos_at_front != "-1" and board[row_index-1][col_index] == '':
-        valid_moves.append(pos_at_front)
-        if row_index == 6:
-            pos_at_front_twice = array2grid(row_index-2, col_index)
-            if board[row_index-2][col_index] == '':
-                valid_moves.append(pos_at_front_twice)
+    front_position = array2grid(row-1, column)
+    if front_position != "-1" and chess_board[row-1][column] == '':
+        valid_move_list.append(front_position)
+        if row == 6:
+            double_front_position = array2grid(row-2, column)
+            if chess_board[row-2][column] == '':
+                valid_move_list.append(double_front_position)
                 
-    pos_at_left_diag = array2grid(row_index-1, col_index-1)
-    if pos_at_left_diag != "-1" and board[row_index-1][col_index-1].islower():
-        valid_moves.append(pos_at_left_diag)
-    pos_at_right_diag = array2grid(row_index-1, col_index+1)
-    if pos_at_right_diag != "-1" and board[row_index-1][col_index+1].islower():
-        valid_moves.append(pos_at_right_diag)
+    left_diagonal_position = array2grid(row-1, column-1)
+    if left_diagonal_position != "-1" and chess_board[row-1][column-1].islower():
+        valid_move_list.append(left_diagonal_position)
+    right_diagonal_position = array2grid(row-1, column+1)
+    if right_diagonal_position != "-1" and chess_board[row-1][column+1].islower():
+        valid_move_list.append(right_diagonal_position)
 
-    return valid_moves
+    return valid_move_list
